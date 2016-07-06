@@ -197,11 +197,13 @@ int amqp_basic_publish(amqp_connection_state_t state,
    * should really be done in amqp_try_send/writev */
   res = amqp_time_has_past(state->next_recv_heartbeat);
   if (AMQP_STATUS_TIMER_FAILURE == res) {
+	  printf("[rabbitmq-c] Send Timer Failure\n");
     return res;
   } else if (AMQP_STATUS_TIMEOUT == res) {
     res = amqp_try_recv(state);
     if (AMQP_STATUS_TIMEOUT == res) {
-      return AMQP_STATUS_HEARTBEAT_TIMEOUT;
+    	printf("[rabbitmq-c] Send Heartbeat timeout\n");
+    	return AMQP_STATUS_HEARTBEAT_TIMEOUT;
     } else if (AMQP_STATUS_OK != res) {
       return res;
     }

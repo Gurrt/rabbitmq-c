@@ -151,6 +151,7 @@ int amqp_tune_connection(amqp_connection_state_t state,
 
   state->heartbeat = heartbeat;
   if (0 > state->heartbeat) {
+	printf("[rabbitmq-c] no heartbeat configured :(");
     state->heartbeat = 0;
   }
 

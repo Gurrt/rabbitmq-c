@@ -826,6 +826,7 @@ static int wait_frame_inner(amqp_connection_state_t state,
 beginrecv:
     res = amqp_time_has_past(state->next_send_heartbeat);
     if (AMQP_STATUS_TIMER_FAILURE == res) {
+      printf("[rabbitmq-c] AMQP_STATUS_TIMER_FAILURE\n");
       return res;
     } else if (AMQP_STATUS_TIMEOUT == res) {
       amqp_frame_t heartbeat;
@@ -848,8 +849,8 @@ beginrecv:
 
     if (AMQP_STATUS_TIMEOUT == res) {
       if (amqp_time_equal(deadline, state->next_recv_heartbeat)) {
+    	printf("[rabbitmq-c] Server Heartbeat timeout\n");
         amqp_socket_close(state->socket, AMQP_SC_FORCE);
-        printf("[rabbitmq-c] Server Heartbeat timeout\n");
         return AMQP_STATUS_HEARTBEAT_TIMEOUT;
       } else if (amqp_time_equal(deadline, timeout_deadline)) {
     	  printf("[rabbitmq-c] Receive timeout\n");
@@ -1238,6 +1239,8 @@ static amqp_rpc_reply_t amqp_login_inner(amqp_connection_state_t state,
     amqp_sasl_method_enum sasl_method,
     va_list vl)
 {
+
+  printf("[rabbitmq-c] logging in with hearbeat set to %d seconds", heartbeat);
   int res;
   amqp_method_t method;
 
@@ -1387,6 +1390,7 @@ static amqp_rpc_reply_t amqp_login_inner(amqp_connection_state_t state,
     server_channel_max = s->channel_max;
     server_frame_max = s->frame_max;
     server_heartbeat = s->heartbeat;
+    printf("[rabbitmq-c] server's preffered heartbeat: %d seconds", server_heartbeat);
   }
 
   if (server_channel_max != 0 &&
@@ -1415,6 +1419,7 @@ static amqp_rpc_reply_t amqp_login_inner(amqp_connection_state_t state,
     s.frame_max = client_frame_max;
     s.channel_max = client_channel_max;
     s.heartbeat = client_heartbeat;
+    printf("[rabbitmq-c] Heartbeating every %d seconds", s.heartbeat);
 
     res = amqp_send_method(state, 0, AMQP_CONNECTION_TUNE_OK_METHOD, &s);
     if (res < 0) {
