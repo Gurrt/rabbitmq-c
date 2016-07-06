@@ -1478,7 +1478,7 @@ amqp_rpc_reply_t amqp_login(amqp_connection_state_t state,
 
   va_start(vl, sasl_method);
 
-  ret = amqp_login_inner(state, vhost, channel_max, frame_max, heartbeat,
+  ret = amqp_login_inner(state, vhost, channel_max, frame_max, 10,
                          &amqp_empty_table, sasl_method, vl);
 
   va_end(vl);
