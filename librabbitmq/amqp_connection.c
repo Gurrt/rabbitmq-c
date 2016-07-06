@@ -519,6 +519,7 @@ static int amqp_frame_to_bytes(const amqp_frame_t *frame, amqp_bytes_t buffer,
     }
 
     case AMQP_FRAME_HEARTBEAT:
+      printf("[rabbitmq-c] Converting Heartbeat frame to buffer\n");
       out_frame_len = 0;
       break;
 

@@ -831,6 +831,7 @@ beginrecv:
       amqp_frame_t heartbeat;
       heartbeat.channel = 0;
       heartbeat.frame_type = AMQP_FRAME_HEARTBEAT;
+      printf("[rabbitmq-c] Should send heartbeat frame now!\n");
 
       res = amqp_send_frame(state, &heartbeat);
       if (AMQP_STATUS_OK != res) {
@@ -848,11 +849,14 @@ beginrecv:
     if (AMQP_STATUS_TIMEOUT == res) {
       if (amqp_time_equal(deadline, state->next_recv_heartbeat)) {
         amqp_socket_close(state->socket, AMQP_SC_FORCE);
+        printf("[rabbitmq-c] Server Heartbeat timeout\n");
         return AMQP_STATUS_HEARTBEAT_TIMEOUT;
       } else if (amqp_time_equal(deadline, timeout_deadline)) {
-        return AMQP_STATUS_TIMEOUT;
+    	  printf("[rabbitmq-c] Receive timeout\n");
+    	  return AMQP_STATUS_TIMEOUT;
       } else if (amqp_time_equal(deadline, state->next_send_heartbeat)) {
-        /* send heartbeat happens before we do recv_with_timeout */
+    	  printf("[rabbitmq-c] Client heartbeat timeout\n");
+    	  /* send heartbeat happens before we do recv_with_timeout */
         goto beginrecv;
       } else {
         amqp_abort("Internal error: unable to determine timeout reason");
